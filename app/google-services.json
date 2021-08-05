@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "558946858256",
+    "project_id": "storagetutorial-16a66",
+    "storage_bucket": "storagetutorial-16a66.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:558946858256:android:23b8437fc20e56cbe26195",
+        "android_client_info": {
+          "package_name": "pjh.practice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "558946858256-62o19kfrstaf7ktq6n8bs41hnvbvfnjr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pjh.practice",
+            "certificate_hash": "f242636d0bfa02031304fd3eb623295214cc72c4"
+          }
+        },
+        {
+          "client_id": "558946858256-nebcatr3tf3bdss6ac3iqt6b74vmmdqa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfEznERfvmOIdsYcheWfGGFWK9zErcf7Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "558946858256-nebcatr3tf3bdss6ac3iqt6b74vmmdqa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
