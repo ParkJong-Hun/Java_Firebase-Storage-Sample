@@ -3,8 +3,10 @@ package pjh.practice;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView image;
     Button upload, delete;
+    Uri file;
+    FirebaseStorage storage;
+    StorageReference storageRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,31 +39,16 @@ public class MainActivity extends AppCompatActivity {
         upload = findViewById(R.id.upload);
         delete = findViewById(R.id.delete);
         //Storage 인스턴스 만들기
-        FirebaseStorage storage = FirebaseStorage.getInstance();
+        storage = FirebaseStorage.getInstance();
         //가져오기 업데이트를 위한 참조 만들기 (파일을 가리키는 포인터)
-        StorageReference storageRef = storage.getReference();
+        storageRef = storage.getReference();
         //업로드 버튼 클릭
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //저장소에 Uri를 이용해 파일 업로드
-                Uri file = null;
-                StorageReference riversRef = storageRef.child("images/image.jpg");
-                if(!file.equals(null)) {
-                    UploadTask uploadTask = riversRef.putFile(file);
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override//업로드 실패
-                        public void onFailure(@NonNull Exception exception) {
-                            Toast.makeText(getApplicationContext(), "이미지 업로드가 실패했습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override//업로드 성공
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            image.setImageURI(file);
-                            Toast.makeText(getApplicationContext(), "이미지가 업로드가 성공했습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(intent, 200);
             }
         });
         //삭제 버튼 클릭
@@ -70,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override//삭제 성공
                     public void onSuccess(Void aVoid) {
+                        image.setImageDrawable(null);
                         Toast.makeText(getApplicationContext(), "이미지가 삭제가 성공했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -80,5 +71,31 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    //Storage로 업로드 실시
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 200 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            file = data.getData();
+            //저장소에 Uri를 이용해 파일 업로드
+            StorageReference riversRef = storageRef.child("images/image.jpg");
+            if(!file.equals(null)) {
+                UploadTask uploadTask = riversRef.putFile(file);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override//업로드 실패
+                    public void onFailure(@NonNull Exception exception) {
+                        Toast.makeText(getApplicationContext(), "이미지 업로드가 실패했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override//업로드 성공
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        image.setImageURI(file);
+                        Toast.makeText(getApplicationContext(), "이미지가 업로드가 성공했습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
     }
 }
