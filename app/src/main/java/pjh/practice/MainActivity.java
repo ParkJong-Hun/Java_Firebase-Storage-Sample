@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         //가져오기 업데이트를 위한 참조 만들기 (파일을 가리키는 포인터)
         storageRef = storage.getReference();
+        updateFile();
         //업로드 버튼 클릭
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override//삭제 성공
                     public void onSuccess(Void aVoid) {
-                        image.setImageDrawable(null);
+                        updateFile();
                         Toast.makeText(getApplicationContext(), "이미지가 삭제가 성공했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -91,11 +94,21 @@ public class MainActivity extends AppCompatActivity {
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override//업로드 성공
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        image.setImageURI(file);
+                        updateFile();
                         Toast.makeText(getApplicationContext(), "이미지가 업로드가 성공했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         }
+    }
+    
+    //File 업로드, 삭제 확인해 업데이트
+    protected void updateFile() {
+        //Glide를 이용해 이미지 업로드 되면 클라우드 저장소에서 다운로드 받아와 갱신
+        //load: 불러올 파일. signature: 실시간 갱신 가능하게. into: 어떤 뷰에다가 적용?
+        Glide.with(getApplicationContext())
+                .load(storageRef.child("images/image.jpg"))
+                .signature(new ObjectKey(System.currentTimeMillis()))
+                .into(image);
     }
 }
